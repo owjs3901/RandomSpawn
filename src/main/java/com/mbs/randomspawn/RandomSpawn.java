@@ -1,15 +1,15 @@
 package com.mbs.randomspawn;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 import java.util.*;
 
@@ -19,21 +19,19 @@ public final class RandomSpawn extends JavaPlugin implements Listener {
 	private List<Location> spawnList = new ArrayList<>();
 	private final Random random = new Random();
 	private final String TAG = "[RandomSpawn] ";
+	private boolean rsJoin = true, rsRespawn = true;
 
 	@Override
 	public void onEnable() {
 		Bukkit.getPluginManager().registerEvents(this, this);
-		for (String spawns : getConfig().getConfigurationSection("spawns").getKeys(false)) {
-			Location loc = getConfig().getLocation("spawns." + spawns);
-			spawnMap.put(spawns, loc);
-			spawnList.add(loc);
-		}
+		loadConfig();
 	}
 
 	private void help(CommandSender sender) {
 		sender.sendMessage(new String[]{
 				"RandomSpawn 1.0.0",
 				"/rs list - 스폰 목록",
+				"/rs reload - 정보 갱신",
 				"/rs add <Name> - 스폰 추가",
 				"/rs remove <Name> - 스폰 삭제",
 				"MBS Group",
@@ -50,11 +48,37 @@ public final class RandomSpawn extends JavaPlugin implements Listener {
 		super.saveConfig();
 	}
 
+	public void loadConfig() {
+		if (!getConfig().isBoolean("join"))
+			getConfig().set("join", rsJoin);
+		else
+			rsJoin = getConfig().getBoolean("join");
+		if (!getConfig().isBoolean("respawn"))
+			getConfig().set("respawn", rsRespawn);
+		else
+			rsRespawn = getConfig().getBoolean("respawn");
+		for (String spawns : getConfig().getConfigurationSection("spawns").getKeys(false))
+			spawnList.add(spawnMap.put(spawns, getConfig().getLocation("spawns." + spawns)));
+	}
+
+	@Override
+	public void reloadConfig() {
+		super.reloadConfig();
+		spawnList.clear();
+		spawnMap.clear();
+		loadConfig();
+	}
+
 	@Override
 	public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
 		switch (args.length) {
 			case 1:
 				switch (args[0]) {
+					case "reload":
+					case "재시작":
+						reloadConfig();
+						sender.sendMessage(TAG + "§aConfig 파일을 재시작 했습니다");
+						break;
 					case "목록":
 					case "list":
 						sender.sendMessage(String.format("RandomSpawn List(%d)", spawnMap.size()));
@@ -77,7 +101,7 @@ public final class RandomSpawn extends JavaPlugin implements Listener {
 							spawnMap.put(args[1], loc);
 							spawnList.add(loc);
 							saveConfig();
-							sender.sendMessage(TAG + "스폰지점을 추가했습니다");
+							sender.sendMessage(TAG + "§a스폰지점을 추가했습니다");
 						} else
 							sender.sendMessage(TAG + "§c플레이어만 사용할 수 있습니다.");
 						break;
@@ -88,7 +112,7 @@ public final class RandomSpawn extends JavaPlugin implements Listener {
 						else {
 							spawnList.remove(spawnMap.remove(args[1]));
 							saveConfig();
-							sender.sendMessage(TAG + "스폰지점을 삭제했습니다");
+							sender.sendMessage(TAG + "§a스폰지점을 삭제했습니다");
 						}
 						break;
 					default:
@@ -108,11 +132,14 @@ public final class RandomSpawn extends JavaPlugin implements Listener {
 	}
 
 	@EventHandler
-	public void onSpawn(PlayerSpawnLocationEvent e) {
-		if (!spawnMap.isEmpty()){
-			int r=random.nextInt(spawnList.size());
-			System.out.println(r+" "+spawnList.get(r).toString());
-			e.setSpawnLocation(spawnList.get(r));
-		}
+	public void onJoin(PlayerJoinEvent e) {
+		if (rsJoin && !spawnMap.isEmpty())
+			Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> e.getPlayer().teleport(spawnList.get(random.nextInt(spawnList.size()))));
+	}
+
+	@EventHandler
+	public void onSpawn(PlayerRespawnEvent e) {
+		if (rsRespawn && !spawnMap.isEmpty())
+			e.setRespawnLocation(spawnList.get(random.nextInt(spawnList.size())));
 	}
 }
