@@ -46,8 +46,9 @@ public final class RandomSpawn extends JavaPlugin implements Listener {
 	public void saveConfig() {
 		getConfig().set("respawn", rsRespawn);
 		getConfig().set("join", rsJoin);
-		for (String s : spawnMap.keySet())
-			getConfig().set("spawns." + s, spawnMap.get(s));
+		if(!spawnMap.isEmpty())
+			for (String s : spawnMap.keySet())
+				getConfig().set("spawns." + s, spawnMap.get(s));
 		super.saveConfig();
 	}
 
@@ -150,7 +151,7 @@ public final class RandomSpawn extends JavaPlugin implements Listener {
 			}
 		else
 			for (String s : argsArray)
-				if(args[1].length()<=s.length()&&s.substring(0,args[1].length()).equals(args[1]))
+				if(args[0].length()<=s.length()&&s.substring(0,args[0].length()).equals(args[0]))
 					tabList.add(s);
 		return tabList;
 	}
