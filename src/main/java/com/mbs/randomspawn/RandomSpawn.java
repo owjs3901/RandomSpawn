@@ -59,16 +59,11 @@ public final class RandomSpawn extends JavaPlugin implements Listener {
 		if (getConfig().isBoolean("respawn"))
 			rsRespawn = getConfig().getBoolean("respawn");
 		else saveConfig();
-		for (String spawns : getConfig().getConfigurationSection("spawns").getKeys(false))
-			spawnList.add(spawnMap.put(spawns, getConfig().getLocation("spawns." + spawns)));
-	}
-
-	@Override
-	public void reloadConfig() {
-		super.reloadConfig();
-		spawnList.clear();
-		spawnMap.clear();
-		loadConfig();
+		for (String spawns : getConfig().getConfigurationSection("spawns").getKeys(false)){
+			Location loc=getConfig().getLocation("spawns." + spawns);
+			spawnMap.put(spawns, loc);
+			spawnList.add(loc);
+		}
 	}
 
 	@Override
@@ -79,6 +74,9 @@ public final class RandomSpawn extends JavaPlugin implements Listener {
 					case "reload":
 					case "재시작":
 						reloadConfig();
+						spawnList.clear();
+						spawnMap.clear();
+						loadConfig();
 						sender.sendMessage(TAG + "§aConfig 파일을 재시작 했습니다");
 						break;
 					case "목록":
