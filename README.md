@@ -10,9 +10,9 @@ SPIGOT 1.15.1 API로 개발되었습니다.
 # 명령어
 - /rs list - 스폰 목록
 - /rs reload - 정보 갱신
-- /rs add <Name> - 스폰 추가
-- /rs remove <Name> - 스폰 삭제
-- /rs tp <Name> - 스폰으로 이동
+- /rs add &lt;Name&gt; - 스폰 추가
+- /rs remove &lt;Name&gt; - 스폰 삭제
+- /rs tp &lt;Name&gt; - 스폰으로 이동
 
 # 권한
 randomspawn.*  
