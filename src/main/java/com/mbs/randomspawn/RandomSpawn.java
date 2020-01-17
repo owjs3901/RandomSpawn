@@ -34,6 +34,7 @@ public final class RandomSpawn extends JavaPlugin implements Listener {
 				"/rs reload - 정보 갱신",
 				"/rs add <Name> - 스폰 추가",
 				"/rs remove <Name> - 스폰 삭제",
+				"/rs tp <Name> - 스폰으로 이동",
 				"MBS Group",
 		});
 	}
@@ -92,6 +93,16 @@ public final class RandomSpawn extends JavaPlugin implements Listener {
 				break;
 			case 2:
 				switch (args[0]) {
+					case "tp":
+					case "이동":
+						if (!spawnMap.containsKey(args[1]))
+							sender.sendMessage(String.format(TAG + "§c%s 스폰지점을 찾을 수 없습니다", args[1]));
+						else if (sender instanceof Player) {
+							((Player) sender).teleport(spawnMap.get(args[1]));
+							sender.sendMessage(String.format(TAG + "§a%s 스폰지점으로 이동했습니다", args[1]));
+						} else
+							sender.sendMessage(TAG + "§c플레이어만 사용할 수 있습니다.");
+						break;
 					case "추가":
 					case "add":
 						if (spawnMap.containsKey(args[1]))
@@ -101,18 +112,18 @@ public final class RandomSpawn extends JavaPlugin implements Listener {
 							spawnMap.put(args[1], loc);
 							spawnList.add(loc);
 							saveConfig();
-							sender.sendMessage(TAG + "§a스폰지점을 추가했습니다");
+							sender.sendMessage(String.format(TAG + "§a%s 스폰지점을 추가했습니다", args[1]));
 						} else
 							sender.sendMessage(TAG + "§c플레이어만 사용할 수 있습니다.");
 						break;
 					case "삭제":
 					case "remove":
 						if (!spawnMap.containsKey(args[1]))
-							sender.sendMessage(TAG + "§c해당 스폰지점을 찾을 수 없습니다");
+							sender.sendMessage(String.format(TAG + "§c%s 스폰지점을 찾을 수 없습니다", args[1]));
 						else {
 							spawnList.remove(spawnMap.remove(args[1]));
 							saveConfig();
-							sender.sendMessage(TAG + "§a스폰지점을 삭제했습니다");
+							sender.sendMessage(String.format(TAG + "§a%s 스폰지점을 삭제했습니다", args[1]));
 						}
 						break;
 					default:
