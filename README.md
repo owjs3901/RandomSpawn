@@ -1,5 +1,7 @@
 # RandomSpawn
 
+![](./RandomSpawn.png)
+
 SPIGOT 1.15.1 API로 개발되었습니다.  
 
 # 개요
