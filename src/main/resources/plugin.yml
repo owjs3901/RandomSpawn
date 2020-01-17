@@ -1,0 +1,11 @@
+name: RandomSpawn
+version: @version@
+main: com.mbs.randomspawn.RandomSpawn
+api-version: 1.13
+author: ojm3901
+commands:
+  randomspawn:
+    permission: randomspawn.*
+    permission-message: "[RandomSpawn] §c권한이 없습니다"
+    aliases:
+      - rs
