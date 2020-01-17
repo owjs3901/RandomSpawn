@@ -138,12 +138,21 @@ public final class RandomSpawn extends JavaPlugin implements Listener {
 		return true;
 	}
 
+
+	private String[] argsArray={"reload","list","add","remove","tp","재시작","목록","추가","삭제","이동"};
 	@Override
 	public List<String> onTabComplete(final CommandSender sender, final Command command, final String alias, final String[] args) {
+		ArrayList<String> tabList=new ArrayList<>();
 		if(args.length>1)
-			return new ArrayList<>(spawnMap.keySet());
+			for (String s : spawnMap.keySet()) {
+				if(args[1].length()<=s.length()&&s.substring(0,args[1].length()).equals(args[1]))
+					tabList.add(s);
+			}
 		else
-			return Arrays.asList("reload","list","add","remove","tp","재시작","목록","추가","삭제","이동");
+			for (String s : argsArray)
+				if(args[1].length()<=s.length()&&s.substring(0,args[1].length()).equals(args[1]))
+					tabList.add(s);
+		return tabList;
 	}
 
 	@Override
