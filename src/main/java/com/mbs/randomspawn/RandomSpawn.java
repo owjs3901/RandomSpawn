@@ -44,20 +44,20 @@ public final class RandomSpawn extends JavaPlugin implements Listener {
 	 */
 	@Override
 	public void saveConfig() {
+		getConfig().set("respawn", rsRespawn);
+		getConfig().set("join", rsJoin);
 		for (String s : spawnMap.keySet())
 			getConfig().set("spawns." + s, spawnMap.get(s));
 		super.saveConfig();
 	}
 
 	public void loadConfig() {
-		if (!getConfig().isBoolean("join"))
-			getConfig().set("join", rsJoin);
-		else
+		if (getConfig().isBoolean("join"))
 			rsJoin = getConfig().getBoolean("join");
-		if (!getConfig().isBoolean("respawn"))
-			getConfig().set("respawn", rsRespawn);
-		else
+		else saveConfig();
+		if (getConfig().isBoolean("respawn"))
 			rsRespawn = getConfig().getBoolean("respawn");
+		else saveConfig();
 		for (String spawns : getConfig().getConfigurationSection("spawns").getKeys(false))
 			spawnList.add(spawnMap.put(spawns, getConfig().getLocation("spawns." + spawns)));
 	}
@@ -135,7 +135,15 @@ public final class RandomSpawn extends JavaPlugin implements Listener {
 				help(sender);
 				break;
 		}
-		return super.onCommand(sender, command, label, args);
+		return true;
+	}
+
+	@Override
+	public List<String> onTabComplete(final CommandSender sender, final Command command, final String alias, final String[] args) {
+		if(args.length>1)
+			return new ArrayList<>(spawnMap.keySet());
+		else
+			return Arrays.asList("reload","list","add","remove","tp","재시작","목록","추가","삭제","이동");
 	}
 
 	@Override
